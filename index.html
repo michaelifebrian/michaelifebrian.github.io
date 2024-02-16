@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Caption Prediction</title>
+</head>
+<body>
+    <h1>Image Caption Prediction</h1>
+    <form id="imageForm" enctype="multipart/form-data">
+        <input type="file" id="imageInput" accept="image/*">
+        <button type="button" onclick="predictImage()">Predict</button>
+    </form>
+    <div id="predictionResult" style="margin-top: 20px;"></div>
+
+    <script>
+        function predictImage() {
+            var fileInput = document.getElementById('imageInput');
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function (event) {
+                var imageData = event.target.result;
+                var base64Image = imageData.split(',')[1];
+                sendPredictionRequest(base64Image);
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function sendPredictionRequest(base64Image) {
+            var apiUrl = 'http://rnidm-103-213-129-65.a.free.pinggy.online/predict'; // Update this with your Flask server URL
+            var requestData = {
+                image: base64Image
+            };
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayPrediction(data.prob);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function displayPrediction(prediction) {
+            var predictionResultDiv = document.getElementById('predictionResult');
+            predictionResultDiv.innerHTML = '<strong>Predicted Caption:</strong> ' + prediction;
+        }
+    </script>
+</body>
+</html>
