@@ -2,7 +2,7 @@ let objectDetector;
 let tensor;
 
 async function detect() {
-  //tf.setBackend("cpu")
+  tf.setBackend("cpu")
   let tensor = tf.browser.fromPixels(document.querySelector("img"));
   tensor = tf.image.resizeBilinear(tensor, [456, 456])
   tensor = tf.reshape(tensor, [1,456,456,3])
@@ -10,7 +10,7 @@ async function detect() {
   if (!objectDetector) {
     objectDetector = await tf.loadGraphModel('encoder_tfjsmodel/model.json');
   }
-  console.log("model loaded)
+  console.log("model loaded);
   document.querySelector(".result").textContent = "model loaded"
   console.log(tensor)
   //let result = objectDetector.predict(tensor)
