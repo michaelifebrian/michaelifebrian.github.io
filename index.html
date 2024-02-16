@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Caption Prediction</title>
+    <style>
+        #loadingIndicator {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <h1>Image Caption Prediction</h1>
@@ -11,7 +16,9 @@
         <input type="file" id="imageInput" accept="image/*">
         <button type="button" onclick="predictImage()">Predict</button>
     </form>
+    <div id="imagePreview" style="margin-top: 20px;"></div>
     <div id="predictionResult" style="margin-top: 20px;"></div>
+    <div id="loadingIndicator">Loading...</div>
 
     <script>
         function predictImage() {
@@ -22,14 +29,24 @@
             reader.onload = function (event) {
                 var imageData = event.target.result;
                 var base64Image = imageData.split(',')[1];
+                // Display image preview
+                displayImage(imageData);
                 sendPredictionRequest(base64Image);
             };
 
             reader.readAsDataURL(file);
         }
 
+        function displayImage(imageData) {
+            var imagePreviewDiv = document.getElementById('imagePreview');
+            imagePreviewDiv.innerHTML = '<img src="' + imageData + '" style="max-width: 300px; max-height: 300px;">';
+        }
+
         function sendPredictionRequest(base64Image) {
-            var apiUrl = 'https://rnidm-103-213-129-65.a.free.pinggy.online/predict'; // Update this with your Flask server URL
+            // Show loading indicator
+            document.getElementById('loadingIndicator').style.display = 'block';
+
+            var apiUrl = 'http://localhost:5000/predict'; // Update this with your Flask server URL
             var requestData = {
                 image: base64Image
             };
@@ -43,9 +60,15 @@
             })
             .then(response => response.json())
             .then(data => {
-                displayPrediction(data.prob);
+                // Hide loading indicator
+                document.getElementById('loadingIndicator').style.display = 'none';
+                displayPrediction(data.predictions);
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                // Hide loading indicator on error
+                document.getElementById('loadingIndicator').style.display = 'none';
+                console.error('Error:', error);
+            });
         }
 
         function displayPrediction(prediction) {
