@@ -10,7 +10,7 @@ async function detect() {
   if (!objectDetector) {
     objectDetector = await tf.loadGraphModel('encoder_tfjsmodel/model.json');
   }
-  console.log("model loaded);
+  console.log("model loaded");
   document.querySelector(".result").textContent = "model loaded"
   console.log(tensor)
   //let result = objectDetector.predict(tensor)
